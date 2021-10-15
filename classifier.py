@@ -60,18 +60,7 @@ def traverseTree(row, tree, nodeType):
                 newType = "leaf" if "leaf" in obj["edge"].keys() else "node"
                 return traverseTree(row, obj["edge"][newType], newType)
 
-
-# In[47]:
-
-
-def printRow(data):
-    out = []
-    for i, row in data.iterrows():
-        
-    for item in row:
-        print(item, end=" ")
-
-
+            
 # In[59]:
 
 
