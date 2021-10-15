@@ -63,45 +63,57 @@ def traverseTree(row, tree, nodeType):
             
 # In[59]:
 
-
-def classify():
+def classify(d=None, t=None, silent=False):
     numErrors = 0
     numCorrect = 0
     totalClassified = 0
     accuracy = 0
     errorRate = 0
     
-    data, tree = readFiles("nursery.csv", "output.json")
-    
+    data=None
+    tree=None
+    if d is None and t is None:
+        data, tree = readFiles()
+    else:
+        data=d
+        tree=t
+
     out = []
     for i, row in data.iterrows():
         prediction = traverseTree(row, tree["node"], "node")
-        actual = row[data.columns[-1]]
         
-        newLine = []
-        for c in row:
-            newLine.append(c)
-        newLine.append(prediction)
-        out.append(newLine)
-        
-        if prediction != actual:
-            numErrors += 1
+        if silent:
+            out.append([i,prediction])
         else:
-            numCorrect += 1
-            
-        totalClassified += 1
-            
-    cols = [c for c in data.columns] + ["Prediction"]
-    
-    accuracy = numCorrect / totalClassified
-    errorRate = numErrors / totalClassified
-    
-    print(pd.DataFrame(out, columns=cols))
-    print("Total Records Classifed: ", totalClassified)
-    print("Total Classified Correctly: ", numCorrect)
-    print("Total Classified Incorrectly: ", numErrors)
-    print("Accuracy: ", accuracy)
-    print("Error Rate: ", errorRate)
-    
-classify()
+            actual = row[data.columns[-1]] 
+            newLine = []
+            for c in row:
+                newLine.append(c)
+            newLine.append(prediction)
+            out.append(newLine)
 
+            if prediction != actual:
+                numErrors += 1
+            else:
+                numCorrect += 1
+
+            totalClassified += 1
+    
+    if silent:
+        return out
+    else:
+        cols = [c for c in data.columns] + ["Prediction"]
+
+        accuracy = numCorrect / totalClassified
+        errorRate = numErrors / totalClassified
+
+
+        print(pd.DataFrame(out, columns=cols))
+        print("Total Records Classifed: ", totalClassified)
+        print("Total Classified Correctly: ", numCorrect)
+        print("Total Classified Incorrectly: ", numErrors)
+        print("Accuracy: ", accuracy)
+        print("Error Rate: ", errorRate)
+    
+if __name__ == "__main__":
+    classify()
