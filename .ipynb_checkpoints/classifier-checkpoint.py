@@ -62,6 +62,9 @@ def traverseTree(row, tree, nodeType):
 
             
 # In[59]:
+def confusionMatrix(resultDf):
+    predictions = resultDf["Prediction"].unique()
+    print(predictions)
 
 
 def classify():
@@ -77,6 +80,8 @@ def classify():
     for i, row in data.iterrows():
         prediction = traverseTree(row, tree["node"], "node")
         actual = row[data.columns[-1]]
+        
+        
         
         newLine = []
         for c in row:
