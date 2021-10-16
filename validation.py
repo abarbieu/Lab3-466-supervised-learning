@@ -57,7 +57,9 @@ def predict_kfold(df, numSplits, threshold):
             classifyData = df[prev:]
         kfoldPreds += classify(classifyData, c45(trainingData, df.columns[:-1], threshold), silent=True)
     
-    return pd.DataFrame(kfoldPreds, columns=['index', 'prediction'])
+    ret = pd.DataFrame(kfoldPreds, columns=['index', 'prediction']).set_index('index')
+    ret['actual'] = df.loc[:,df.columns[-1]:]
+    return ret
 
 
 if __name__ == '__main__':
