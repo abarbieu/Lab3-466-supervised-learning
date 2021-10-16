@@ -64,3 +64,4 @@ if __name__ == '__main__':
     df,k = getArgs()
     print(predict_kfold(df, k, 0.2))
 
+# pierce, consulting firm customers, base for later jobs
