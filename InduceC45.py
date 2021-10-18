@@ -81,8 +81,17 @@ def c45(data, attrs, thresh):
                 edge.update(subtree)
                 newNode["node"]['edges'].append({"edge": edge})
         return newNode
-            
-def readArrange(filename, restrictions):
+
+# Reads a training set csv file and a restrictions vector text file, returns arranged training set          
+def readFiles(filename=None, restrictions=None):
+    if filename is None and restrictions is None:
+        if len(sys.argv) < 2:
+            print("Not enough arguments.")
+            exit(1)
+        elif len(sys.argv) == 3:
+            restrictions = sys.argv[2]
+        filename = sys.argv[1]
+
     restr=None
     if restrictions != None:
         with open(restrictions) as r:
@@ -97,15 +106,20 @@ def readArrange(filename, restrictions):
             if restr[i] == 0:
                 df = df.drop(columns=[v])
     df = df[[c for c in df if c not in [aclass]] + [aclass]]
-    return df
+    return df, filename
 
-datafile = sys.argv[1]
-restrictions=None
-if(len(sys.argv) > 2):
-    restrictions = sys.argv[2]
+# runs c45 with data from file of name training data with restrictions in filename restrictions
+def induceC45(trainingData=None, restrictions=None, threshold=0.2):
+    df,filename = readFiles(trainingData, restrictions)
+    tree={"dataset": filename}
+    tree.update(c45(df, df.columns[:-1], threshold))
+    return tree
 
-df = readArrange(datafile, restrictions)
-tree={"dataset": datafile}
-tree.update(c45(df, df.columns[:-1], 0.2))
 
-print(json.dumps(tree, sort_keys=False, indent=2))
+# prints a decision tree
+def printTree(tree):
+    print(json.dumps(tree, sort_keys=False, indent=2))
+    
+
+if __name__ == "__main__":
+    printTree(induceC45())
