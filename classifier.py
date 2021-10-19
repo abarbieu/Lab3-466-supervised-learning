@@ -61,31 +61,23 @@ def traverseTree(row, tree, nodeType):
     elif nodeType == "node":
         val = row[tree["var"]]
         for obj in tree["edges"]:
-            if obj["edge"]["value"] == "DEFAULT": # capture 'ghost' node
-                plurality = obj["edge"]["leaf"]["decision"]
             if obj["edge"]["value"] == val:
                 newType = "leaf" if "leaf" in obj["edge"].keys() else "node"
                 return traverseTree(row, obj["edge"][newType], newType)
-        return tree["plurality"]["decision"] # if value not represented in data subset
-            
 
 def initializeConfusion(df):
-    labels = resultDf.iloc[:, -1].unique() # labels are in last column (not using result df from classify)
+    labels = df.iloc[:, -1].unique() # labels are in last column (not using result df from classify)
     zeros = np.zeros(shape=(len(labels), len(labels)))
     confusion = pd.DataFrame(zeros, labels, labels)
-
     return confusion
            
     
-def classify(confusion, vals, data=None, tree=None, silent=False, labeled=False):
+def classify(vals, confusion, data, tree, silent=False, labeled=False):
     numErrors = 0
     numCorrect = 0
     totalClassified = 0
     accuracy = 0
     errorRate = 0
-    
-    if data is None and tree is None:
-        data, tree = readFiles()  
 
     out = []
     for i, row in data.iterrows():
@@ -102,7 +94,8 @@ def classify(confusion, vals, data=None, tree=None, silent=False, labeled=False)
 
         if labeled:
             actual = row[data.columns[-1]]
-            confusion[actual][prediction] += 1
+            if confusion is not None:
+                confusion[actual][prediction] += 1
             if prediction != actual:
                 numErrors += 1
             else:
@@ -110,24 +103,25 @@ def classify(confusion, vals, data=None, tree=None, silent=False, labeled=False)
 
         totalClassified += 1
             
-    accuracy = 0
-    errorRate = 0
     if labeled:
         accuracy = numCorrect / totalClassified
         errorRate = numErrors / totalClassified
         vals[0] += accuracy
         vals[1] += errorRate
-#         print("Total Records Classifed: ", totalClassified)
-#         print("Total Classified Correctly: ", numCorrect)
-#         print("Total Classified Incorrectly: ", numErrors)
-#         print("Accuracy: ", accuracy)
-#         print("Error Rate: ", errorRate)
+        print("Total Records Classifed: ", totalClassified)
+        print("Total Classified Correctly: ", numCorrect)
+        print("Total Classified Incorrectly: ", numErrors)
+        print("Accuracy: ", accuracy)
+        print("Error Rate: ", errorRate)
     
     if silent:
         return out
     else:
         cols = [c for c in data.columns] + ["Prediction"]
-        print(pd.DataFrame(out, columns=cols))
-    
+        print(confusion)
+
 if __name__ == "__main__":
-    classify()
+    data, tree, isLabeled = readFiles()  
+    vals=[0,0]
+    confusion = initializeConfusion(data)
+    classify(vals, confusion, data, tree, silent=False, labeled=isLabeled)
