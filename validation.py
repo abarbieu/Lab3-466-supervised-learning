@@ -27,7 +27,7 @@ def getArgs():
         k = sys.argv[2]
         restr = sys.argc[3]
     
-    df,tmp = readFiles(file1,restr)
+    df,tmp,tmp = readFiles(file1,restr)
     
     return df, int(k)
 
@@ -53,7 +53,9 @@ def predict_kfold(df, numSplits, threshold):
                 trainingData = pd.concat([df[:prev], df[i:]])
                 classifyData = df[prev:i]
                 print("running C45 on split #", splitnum)
-                kfoldPreds += classify(classifyData, c45(trainingData, df.columns[:-1], threshold), silent=True)
+                tree=c45(trainingData, df.columns[:-1], threshold)
+                print(classifyData, "tree:", tree)
+                kfoldPreds += classify(classifyData, tree, silent=True)
                 print("completed split #",splitnum)
                 prev=i
         
