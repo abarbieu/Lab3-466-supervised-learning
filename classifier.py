@@ -106,8 +106,6 @@ def classify(confusion, vals, data=None, tree=None, silent=False, labeled=False)
 
         totalClassified += 1
             
-    accuracy = 0
-    errorRate = 0
     if labeled:
         accuracy = numCorrect / totalClassified
         errorRate = numErrors / totalClassified
