@@ -100,13 +100,17 @@ def readFiles(filename=None, restrictions=None):
 
     df = pd.read_csv(filename)
     aclass = df.iloc[1,0]
+    isLabeled = True
+    if not isinstance(aclass, str):
+        isLabeled = False
     df = df.drop([0,1], axis=0)
     if restr != None:
         for i,v in enumerate(df.columns):
             if restr[i] == 0:
                 df = df.drop(columns=[v])
-    df = df[[c for c in df if c not in [aclass]] + [aclass]]
-    return df, filename
+    if isLabeled:
+        df = df[[c for c in df if c not in [aclass]] + [aclass]]
+    return df, restr, isLabeled
 
 # runs c45 with data from file of name training data with restrictions in filename restrictions
 def induceC45(trainingData=None, restrictions=None, threshold=0.2):
