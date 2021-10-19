@@ -54,22 +54,23 @@ def c45(data, attrs, thresh):
             "p": 1.0
         }}
     
-    pluralityClass = {                 # create leaf node with most frequent class
-            "decision": classes.mode()[0],
-            "p": classes.value_counts()[classes.mode()][0]/len(classes)
-        }
-    
     # base case 2
     if len(attrs) == 0:
-        return {"leaf": pluralityClass}
+        return {"leaf": {                 # create leaf node with most frequent class
+            "decision": classes.mode()[0],
+            "p": classes.value_counts()[classes.mode()][0]/len(classes)
+        }}
     
     # select splitting attr
     asplit = selectSplittingAttr(attrs, data, thresh)
     if asplit == None:
-        return {"leaf": pluralityClass}
+        return {"leaf": {
+            "decision": classes.mode()[0],
+            "p": classes.value_counts()[classes.mode()][0]/len(classes)
+        }}
         
     else:
-        newNode = {"node": {"var": asplit, "plurality": pluralityClass, "edges": []}}
+        newNode = {"node": {"var": asplit, "edges": []}}
         possibleValues = data[asplit].unique()                # gets unique values in column
         for value in possibleValues:
             relatedData = data[(data == value).any(axis = 1)] # take rows that have that value
@@ -78,8 +79,7 @@ def c45(data, attrs, thresh):
                 subtree = c45(relatedData, relatedData.columns[:-1], thresh) 
                 edge = {"value": value}
                 edge.update(subtree)
-                newNode["node"]["edges"].append({"edge": edge})
-            
+                newNode["node"]['edges'].append({"edge": edge})
         return newNode
 
 # Reads a training set csv file and a restrictions vector text file, returns arranged training set          
@@ -114,7 +114,7 @@ def readFiles(filename=None, restrictions=None):
 
 # runs c45 with data from file of name training data with restrictions in filename restrictions
 def induceC45(trainingData=None, restrictions=None, threshold=0.2):
-    df,filename = readFiles(trainingData, restrictions)
+    df,filename,tmp = readFiles(trainingData, restrictions)
     tree={"dataset": filename}
     tree.update(c45(df, df.columns[:-1], threshold))
     return tree
