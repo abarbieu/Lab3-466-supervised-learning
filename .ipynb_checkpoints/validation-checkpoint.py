@@ -43,18 +43,22 @@ def predict_kfold(df, numSplits, threshold):
     if numSplits <= 1:
         kfoldPreds += classify(df, c45(df, df.columns[:-1], threshold), silent=True)
     else:
+        splitnum=0
         # go through indecies by fold length
         for i in range(0,len(df),int(len(df)/numSplits)):
+            splitnum+=1
             if prev is None:
                 prev=i
             else:
                 trainingData = pd.concat([df[:prev], df[i:]])
                 classifyData = df[prev:i]
+                print("running C45 on split #", splitnum)
                 kfoldPreds += classify(classifyData, c45(trainingData, df.columns[:-1], threshold), silent=True)
+                print("completed split #",splitnum)
                 prev=i
-        else:
-            trainingData = df[:prev]
-            classifyData = df[prev:]
+        
+        trainingData = df[:prev]
+        classifyData = df[prev:]
         kfoldPreds += classify(classifyData, c45(trainingData, df.columns[:-1], threshold), silent=True)
     
     ret = pd.DataFrame(kfoldPreds, columns=['index', 'prediction']).set_index('index')

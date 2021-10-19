@@ -56,9 +56,13 @@ def traverseTree(row, tree, nodeType):
     elif nodeType == "node":
         val = row[tree["var"]]
         for obj in tree["edges"]:
+            if obj["edge"]["value"] == "DEFAULT": # capture 'ghost' node
+                plurality = obj["edge"]["leaf"]["decision"]
             if obj["edge"]["value"] == val:
                 newType = "leaf" if "leaf" in obj["edge"].keys() else "node"
                 return traverseTree(row, obj["edge"][newType], newType)
+        return tree["plurality"]["decision"] # if value not represented in data subset
+            
 
             
 # In[59]:
