@@ -107,7 +107,7 @@ def classify(vals, confusion, data, tree, silent=False, labeled=False):
         accuracy = numCorrect / totalClassified
         errorRate = numErrors / totalClassified
         vals[0] += accuracy
-        vals[1] += errorRate
+        vals[1] += numCorrect
         print("Total Records Classifed: ", totalClassified)
         print("Total Classified Correctly: ", numCorrect)
         print("Total Classified Incorrectly: ", numErrors)

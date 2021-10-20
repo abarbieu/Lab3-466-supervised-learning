@@ -1,0 +1,83 @@
+{
+  "dataset": null,
+  "node": {
+    "var": "LOC",
+    "edges": [
+      {
+        "edge": {
+          "value": "S",
+          "node": {
+            "var": "BDR",
+            "edges": [
+              {
+                "edge": {
+                  "value": "3",
+                  "node": {
+                    "var": "BSM",
+                    "edges": [
+                      {
+                        "edge": {
+                          "value": "N",
+                          "leaf": {
+                            "decision": "N",
+                            "p": 1.0
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "Y",
+                          "node": {
+                            "var": "FLP",
+                            "edges": [
+                              {
+                                "edge": {
+                                  "value": "T",
+                                  "leaf": {
+                                    "decision": "Y",
+                                    "p": 1.0
+                                  }
+                                }
+                              },
+                              {
+                                "edge": {
+                                  "value": "O",
+                                  "leaf": {
+                                    "decision": "N",
+                                    "p": 1.0
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "value": "4",
+                  "leaf": {
+                    "decision": "Y",
+                    "p": 1.0
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "edge": {
+          "value": "N",
+          "leaf": {
+            "decision": "N",
+            "p": 0.8333333333333334
+          }
+        }
+      }
+    ]
+  }
+}

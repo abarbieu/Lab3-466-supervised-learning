@@ -12,7 +12,6 @@ import sys
 from InduceC45 import c45, readFiles
 from classifier import classify, readArrange, initializeConfusion
 
-
 # In[85]:
 def getArgs():
     restr=None
@@ -27,17 +26,15 @@ def getArgs():
         k = sys.argv[2]
         restr = sys.argc[3]
     
-    df,tmp,labeled = readFiles(file1,restr)
+    df,tmp,isLabeled = readFiles(file1,restr)
     
-    return df, int(k), labeled
+    return df, int(k), isLabeled
 
-def predict_kfold(df, numSplits, threshold, labeled):
+def predict_kfold(df, numSplits, threshold, isLabeled):
     prev=None
     kfoldPreds = []
-    
-    confusion=initializeConfusion(df)
-    foldAccuracies=[]
-    accErr=[0,0]
+    accCorr = [0, 0]
+    confusion = initializeConfusion(df)
     
     # all but one cross validation
     if numSplits == -1:
@@ -45,8 +42,8 @@ def predict_kfold(df, numSplits, threshold, labeled):
     
     # split dataset kfold and generate predictions
     if numSplits <= 1:
-        kfoldPreds += classify(confusion, accErr, df, c45(df, df.columns[:-1], threshold), silent=True, labeled=labeled)
-        foldAccuracies.append(accErr)
+        kfoldPreds += classify(accCorr, confusion, df, c45(df, df.columns[:-1], threshold), silent=True, 
+                               labeled=isLabeled)
     else:
         splitnum=0
         # go through indecies by fold length
@@ -57,27 +54,29 @@ def predict_kfold(df, numSplits, threshold, labeled):
             else:
                 trainingData = pd.concat([df[:prev], df[i:]])
                 classifyData = df[prev:i]
-                
+                print("running C45 on split #", splitnum-1)
                 tree=c45(trainingData, df.columns[:-1], threshold)
-                
-                foldAccuracies.append(accErr)
-                
-                print("completed split #",splitnum)
+                kfoldPreds += classify(accCorr, confusion, classifyData, tree, silent=True, labeled=isLabeled)
+                print("completed split #",splitnum-1)
+                print()
                 prev=i
         
+        print("running C45 on split #", splitnum)
         trainingData = df[:prev]
         classifyData = df[prev:]
-        print(confusion)
-        kfoldPreds += classify(confusion, accErr, classifyData, c45(trainingData, df.columns[:-1], threshold), silent=True, labeled=labeled)
-        foldAccuracies.append(accErr)
+        kfoldPreds += classify(accCorr, confusion, classifyData, c45(trainingData, df.columns[:-1], threshold), silent=True, 
+                               labeled=isLabeled)
+        print("completed split #", splitnum)
     
     ret = pd.DataFrame(kfoldPreds, columns=['index', 'prediction']).set_index('index')
     ret['actual'] = df.loc[:,df.columns[-1]:]
+    
+    print()
+    print("Overall Accuracy: ", accCorr[1]/len(ret))
+    print("Average Accuracy: ", accCorr[0]/numSplits)
     return ret
 
 
 if __name__ == '__main__':
-    df,k,labeled = getArgs()
-    print(predict_kfold(df, k, 0.2, labeled))
-
-# pierce, consulting firm customers, base for later jobs
+    df, k, isLabeled = getArgs()
+    print(predict_kfold(df, k, 0.2, isLabeled))
