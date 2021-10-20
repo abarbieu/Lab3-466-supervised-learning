@@ -72,7 +72,7 @@ def initializeConfusion(df):
     return confusion
            
     
-def classify(vals, confusion, data, tree, silent=False, labeled=False):
+def classify(vals, confusion, data, tree, silent=False, labeled=False, isPrinted=False):
     numErrors = 0
     numCorrect = 0
     totalClassified = 0
@@ -80,9 +80,10 @@ def classify(vals, confusion, data, tree, silent=False, labeled=False):
     errorRate = 0
 
     out = []
+    keys = list(tree)
     for i, row in data.iterrows():
-        prediction = traverseTree(row, tree["node"], "node")
-        
+        prediction = traverseTree(row, tree[keys[-1]], keys[-1])
+      
         if silent:
             out.append([i,prediction])
         else:
@@ -94,8 +95,7 @@ def classify(vals, confusion, data, tree, silent=False, labeled=False):
 
         if labeled:
             actual = row[data.columns[-1]]
-            if confusion is not None:
-                confusion[actual][prediction] += 1
+            confusion[actual][prediction] += 1
             if prediction != actual:
                 numErrors += 1
             else:
@@ -108,20 +108,24 @@ def classify(vals, confusion, data, tree, silent=False, labeled=False):
         errorRate = numErrors / totalClassified
         vals[0] += accuracy
         vals[1] += numCorrect
-        print("Total Records Classifed: ", totalClassified)
-        print("Total Classified Correctly: ", numCorrect)
-        print("Total Classified Incorrectly: ", numErrors)
-        print("Accuracy: ", accuracy)
-        print("Error Rate: ", errorRate)
+        if isPrinted:
+            print("Total Records Classifed: ", totalClassified)
+            print("Total Classified Correctly: ", numCorrect)
+            print("Total Classified Incorrectly: ", numErrors)
+            print("Accuracy: ", accuracy)
+            print("Error Rate: ", errorRate)
+            print(confusion)
     
     if silent:
         return out
     else:
         cols = [c for c in data.columns] + ["Prediction"]
-        print(confusion)
+        results = pd.DataFrame(out, columns=cols)
+        if isPrinted:
+            print(results)
 
 if __name__ == "__main__":
     data, tree, isLabeled = readFiles()  
     vals=[0,0]
     confusion = initializeConfusion(data)
-    classify(vals, confusion, data, tree, silent=False, labeled=isLabeled)
+    classify(vals, confusion, data, tree, silent=False, labeled=isLabeled, isPrinted=True)

@@ -1,0 +1,26 @@
+
+-----Ran 15-fold cross-validation-----
+Overall Accuracy:  0.5625
+Average Accuracy:  0.6
+Confusion Matrix:
+      T    F
+T  0.0  0.0
+F  7.0  9.0
+      prediction actual
+index                  
+2              F      T
+3              F      T
+4              F      T
+5              F      T
+6              F      T
+7              F      F
+8              F      F
+9              F      F
+10             F      T
+11             F      F
+12             F      F
+13             F      F
+14             F      T
+15             F      F
+16             F      F
+17             F      F

@@ -54,26 +54,23 @@ def predict_kfold(df, numSplits, threshold, isLabeled):
             else:
                 trainingData = pd.concat([df[:prev], df[i:]])
                 classifyData = df[prev:i]
-                print("running C45 on split #", splitnum-1)
                 tree=c45(trainingData, df.columns[:-1], threshold)
                 kfoldPreds += classify(accCorr, confusion, classifyData, tree, silent=True, labeled=isLabeled)
-                print("completed split #",splitnum-1)
-                print()
                 prev=i
         
-        print("running C45 on split #", splitnum)
         trainingData = df[:prev]
         classifyData = df[prev:]
         kfoldPreds += classify(accCorr, confusion, classifyData, c45(trainingData, df.columns[:-1], threshold), silent=True, 
                                labeled=isLabeled)
-        print("completed split #", splitnum)
     
     ret = pd.DataFrame(kfoldPreds, columns=['index', 'prediction']).set_index('index')
     ret['actual'] = df.loc[:,df.columns[-1]:]
     
     print()
+    print(f"-----Ran {numSplits}-fold cross-validation-----")
     print("Overall Accuracy: ", accCorr[1]/len(ret))
     print("Average Accuracy: ", accCorr[0]/numSplits)
+    print("Confusion Matrix:\n", confusion)
     return ret
 
 

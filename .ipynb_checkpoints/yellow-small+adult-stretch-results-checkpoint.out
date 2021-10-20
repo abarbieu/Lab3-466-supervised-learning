@@ -1,0 +1,26 @@
+
+-----Ran 2-fold cross-validation-----
+Overall Accuracy:  0.625
+Average Accuracy:  0.625
+Confusion Matrix:
+      T    F
+T  4.0  3.0
+F  3.0  6.0
+      prediction actual
+index                  
+2              T      T
+3              F      T
+4              F      T
+5              F      T
+6              T      T
+7              F      F
+8              F      F
+9              F      F
+10             T      T
+11             T      F
+12             T      F
+13             T      F
+14             T      T
+15             F      F
+16             F      F
+17             F      F

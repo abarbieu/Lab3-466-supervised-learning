@@ -113,6 +113,7 @@ def readFiles(filename=None, restrictions=None):
     return df, filename, isLabeled
 
 # runs c45 with data from file of name training data with restrictions in filename restrictions
+# threshold was 0.2 originally
 def induceC45(trainingData=None, restrictions=None, threshold=0.2):
     df,filename,tmp = readFiles(trainingData, restrictions)
     tree={"dataset": filename}
@@ -122,6 +123,8 @@ def induceC45(trainingData=None, restrictions=None, threshold=0.2):
 
 # prints a decision tree
 def printTree(tree):
+    with open("tree.json", 'w') as f:
+        json.dump(tree, f)
     print(json.dumps(tree, sort_keys=False, indent=2))
     
 
