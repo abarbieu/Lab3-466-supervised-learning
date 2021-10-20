@@ -61,9 +61,12 @@ def traverseTree(row, tree, nodeType):
     elif nodeType == "node":
         val = row[tree["var"]]
         for obj in tree["edges"]:
+            if obj["edge"]["value"] == "DEFAULT":
+                plurality = obj["edge"]["leaf"]["decision"]
             if obj["edge"]["value"] == val:
                 newType = "leaf" if "leaf" in obj["edge"].keys() else "node"
                 return traverseTree(row, obj["edge"][newType], newType)
+        return tree["plurality"]["decision"]
 
 def initializeConfusion(df):
     labels = df.iloc[:, -1].unique() # labels are in last column (not using result df from classify)

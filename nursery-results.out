@@ -1,0 +1,26 @@
+
+-----Ran 5-fold cross-validation-----
+Overall Accuracy:  0.7416666666666667
+Average Accuracy:  0.7416666666666667
+Confusion Matrix:
+             recommend  priority  not_recom  very_recom  spec_prior
+recommend         0.0       0.0        0.0         0.0         0.0
+priority          2.0    4059.0        0.0       328.0      2811.0
+not_recom         0.0       0.0     4320.0         0.0         0.0
+very_recom        0.0       0.0        0.0         0.0         0.0
+spec_prior        0.0     207.0        0.0         0.0      1233.0
+       prediction      actual
+index                        
+2        priority   recommend
+3        priority    priority
+4       not_recom   not_recom
+5        priority   recommend
+6        priority    priority
+...           ...         ...
+12957  spec_prior  spec_prior
+12958   not_recom   not_recom
+12959  spec_prior  spec_prior
+12960  spec_prior  spec_prior
+12961   not_recom   not_recom
+
+[12960 rows x 2 columns]
