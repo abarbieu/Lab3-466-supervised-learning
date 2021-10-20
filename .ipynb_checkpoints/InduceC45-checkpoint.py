@@ -110,7 +110,7 @@ def readFiles(filename=None, restrictions=None):
                 df = df.drop(columns=[v])
     if isLabeled:
         df = df[[c for c in df if c not in [aclass]] + [aclass]]
-    return df, restr, isLabeled
+    return df, filename, isLabeled
 
 # runs c45 with data from file of name training data with restrictions in filename restrictions
 def induceC45(trainingData=None, restrictions=None, threshold=0.2):
