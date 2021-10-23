@@ -3,6 +3,7 @@ import pandas as pd
 import math
 import json
 import sys
+import time
 
 def selectSplittingAttr(attrs, data, threshold):
     p0 = entropy(data.iloc[:,-1])
@@ -40,8 +41,9 @@ def c45(data, attrs, thresh):
     classes = data.iloc[:,-1]
     firstclass = None
     allsame=True
+    
     for c in classes:
-        if c == None:
+        if firstclass == None:
             firstclass = c
         elif c != firstclass:
             allsame=False
@@ -51,7 +53,8 @@ def c45(data, attrs, thresh):
         #create leaf node for perfect purity
         return {"leaf": {
             "decision": firstclass,
-            "p": 1.0
+            "p": 1.0,
+            "type": "allsame"
         }}
     
     pluralityClass = {
@@ -61,21 +64,26 @@ def c45(data, attrs, thresh):
     
     # base case 2
     if len(attrs) == 0:
+        pluralityClass.update({"type": "noAttrs"})
         return {"leaf": pluralityClass}                 # create leaf node with most frequent class
     
     # select splitting attr
     asplit = selectSplittingAttr(attrs, data, thresh)
     if asplit == None:
+        pluralityClass.update({"type": "threshold"})
         return {"leaf": pluralityClass}
         
     else:
+        attrs.remove(asplit)
         newNode = {"node": {"var": asplit, "plurality": pluralityClass, "edges": []}}
         possibleValues = data[asplit].unique()                # gets unique values in column
+        
         for value in possibleValues:
+            tic=time.clock()
             relatedData = data[(data == value).any(axis = 1)] # take rows that have that value
-            relatedData = relatedData.drop(asplit, axis=1)    # remove the attribute from the data
+            
             if len(relatedData.columns) != 0:
-                subtree = c45(relatedData, relatedData.columns[:-1], thresh) 
+                subtree = c45(relatedData, attrs, thresh) 
                 edge = {"value": value}
                 edge.update(subtree)
                 newNode["node"]["edges"].append({"edge": edge})
@@ -115,7 +123,7 @@ def readFiles(filename=None, restrictions=None):
 def induceC45(trainingData=None, restrictions=None, threshold=0.2):
     df,filename,tmp = readFiles(trainingData, restrictions)
     tree={"dataset": filename}
-    tree.update(c45(df, df.columns[:-1], threshold))
+    tree.update(c45(df, df.columns[:-1].tolist(), threshold))
     return tree
 
 
@@ -127,4 +135,4 @@ def printTree(tree):
     
 
 if __name__ == "__main__":
-    printTree(induceC45())
+    printTree(induceC45(threshold=0))

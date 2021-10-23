@@ -42,7 +42,7 @@ def predict_kfold(df, numSplits, threshold, isLabeled):
     
     # split dataset kfold and generate predictions
     if numSplits <= 1:
-        kfoldPreds += classify(accCorr, confusion, df, c45(df, df.columns[:-1], threshold), silent=True, 
+        kfoldPreds += classify(accCorr, confusion, df, c45(df, df.columns[:-1].tolist(), threshold), silent=True, 
                                labeled=isLabeled)
     else:
         splitnum=0
@@ -54,13 +54,13 @@ def predict_kfold(df, numSplits, threshold, isLabeled):
             else:
                 trainingData = pd.concat([df[:prev], df[i:]])
                 classifyData = df[prev:i]
-                tree=c45(trainingData, df.columns[:-1], threshold)
+                tree=c45(trainingData, df.columns[:-1].tolist(), threshold)
                 kfoldPreds += classify(accCorr, confusion, classifyData, tree, silent=True, labeled=isLabeled)
                 prev=i
         
         trainingData = df[:prev]
         classifyData = df[prev:]
-        kfoldPreds += classify(accCorr, confusion, classifyData, c45(trainingData, df.columns[:-1], threshold), silent=True, 
+        kfoldPreds += classify(accCorr, confusion, classifyData, c45(trainingData, df.columns[:-1].tolist(), threshold), silent=True, 
                                labeled=isLabeled)
     
     ret = pd.DataFrame(kfoldPreds, columns=['index', 'prediction']).set_index('index')
